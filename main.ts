@@ -23,6 +23,7 @@ const genericMappings: Record<string, string> = {
   j: "d",
   jj: "dd",
   ';': ':',
+  '-': '$',
 }
 
 const insertMappings: Record<string, string> = {
@@ -36,16 +37,18 @@ const movementKeys = [
 ]
 
 function withPrefix(prefix: string, pair: Mapping): Mapping {
+  const pa = [prefix];
+
   return {
-    before: `${prefix}${pair.before}`,
-    after:  `${prefix}${pair.after}`,
-  };
+    before: pa.concat(pair.before),
+    after: pa.concat(pair.after),
+  }
 }
 
 function toUpper(pair: Mapping): Mapping {
   return {
-    before: pair.before.toUpperCase(),
-    after:  pair.after.toUpperCase(),
+    before: pair.before.map((m) => m.toUpperCase()),
+    after: pair.after.map((m) => m.toUpperCase()),
   };
 }
 
@@ -57,14 +60,14 @@ function lline(l: string) {
 function genMappings(settings: Record<string, any>) {
   Object.entries(insertMappings).forEach((mapping) => {
     const [before, after] = mapping;
-    const pair = {before, after};
+    const pair = { before: [before], after: [after] };
     const k = "vim.insertModeKeyBindingsNonRecursive";
     settings[k] = [pair];
   });
 
-  Object.entries({...genericMappings, ...movementMappings}).forEach((mapping) => {
+  Object.entries({ ...genericMappings, ...movementMappings }).forEach((mapping) => {
     const [before, after] = mapping;
-    const pair = {before, after};
+    const pair = { before: [before], after: [after] };
     movementKeys.forEach((k) => {
       settings[k] ||= [];
       settings[k].push(pair);
@@ -74,11 +77,11 @@ function genMappings(settings: Record<string, any>) {
 
   Object.entries(movementMappings).forEach((mapping) => {
     const [before, after] = mapping;
-    const pair = {before, after};
+    const pair = { before: [before], after: [after] };
     const k = "vim.normalModeKeyBindingsNonRecursive";
-      settings[k] ||= [];
-      settings[k].push(withPrefix("<C-w>", pair));
-      settings[k].push(withPrefix("<C-w>", toUpper(pair)));
+    settings[k] ||= [];
+    settings[k].push(withPrefix("<C-w>", pair));
+    settings[k].push(withPrefix("<C-w>", toUpper(pair)));
   });
 }
 
@@ -97,5 +100,3 @@ function main() {
 }
 
 main();
-
-
