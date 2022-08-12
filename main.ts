@@ -1,5 +1,8 @@
 import { parse } from "https://deno.land/std/flags/mod.ts";
 
+type Settings = Record<string, any>;
+type Mappings = Record<string, string>;
+
 interface Args {
   source?: string;
   output?: string;
@@ -10,14 +13,14 @@ interface Mapping {
   after: Array<string>;
 }
 
-const movementMappings: Record<string, string> = {
+const movementMappings: Mappings = {
   d: "h",
   h: "j",
   t: "k",
   n: "l",
 };
 
-const genericMappings: Record<string, string> = {
+const genericMappings: Mappings = {
   l: "n",
 
   j: "d",
@@ -26,7 +29,7 @@ const genericMappings: Record<string, string> = {
   "-": "$",
 };
 
-const insertMappings: Record<string, string> = {
+const insertMappings: Mappings = {
   "<C-c>": "<Esc>",
 };
 
@@ -58,8 +61,8 @@ function lline(l: string) {
 }
 
 function addMappings(
-  settings: Record<string, any>,
-  mappings: Record<string, string>,
+  settings: Settings,
+  mappings: Mappings,
   keys: Array<string>,
   addUpper: boolean = false,
   prefix: string = ""
@@ -88,7 +91,7 @@ function addMappings(
   });
 }
 
-function genMappings(settings: Record<string, any>) {
+function genMappings(settings: Settings) {
   addMappings(settings, insertMappings, [
     "vim.insertModeKeyBindingsNonRecursive",
   ]);
@@ -114,14 +117,18 @@ function main() {
   lline("ARGS");
   console.dir(args);
 
-  const template: Record<string, any> = JSON.parse(
+  const template: Settings = JSON.parse(
     Deno.readTextFileSync(args.source || "template.json")
   );
+
   lline("BEFORE");
   console.log(template);
+
   genMappings(template);
+
   lline("AFTER");
   console.log(template);
+
   Deno.writeTextFileSync(
     args.output || "settings.json",
     JSON.stringify(template, null, 2)
