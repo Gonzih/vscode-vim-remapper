@@ -15,26 +15,26 @@ const movementMappings: Record<string, string> = {
   h: "j",
   t: "k",
   n: "l",
-}
+};
 
 const genericMappings: Record<string, string> = {
   l: "n",
 
   j: "d",
   jj: "dd",
-  ';': ':',
-  '-': '$',
-}
+  ";": ":",
+  "-": "$",
+};
 
 const insertMappings: Record<string, string> = {
   "<C-c>": "<Esc>",
-}
+};
 
 const movementKeys = [
   "vim.commandLineModeKeyBindingsNonRecursive",
   "vim.normalModeKeyBindingsNonRecursive",
   "vim.visualModeKeyBindingsNonRecursive",
-]
+];
 
 function withPrefix(prefix: string, pair: Mapping): Mapping {
   const pa = [prefix];
@@ -42,7 +42,7 @@ function withPrefix(prefix: string, pair: Mapping): Mapping {
   return {
     before: pa.concat(pair.before),
     after: pa.concat(pair.after),
-  }
+  };
 }
 
 function toUpper(pair: Mapping): Mapping {
@@ -53,36 +53,60 @@ function toUpper(pair: Mapping): Mapping {
 }
 
 function lline(l: string) {
-  const d = '='.repeat(30);
+  const d = "=".repeat(30);
   console.log(`${d} ${l} ${d}`);
 }
 
-function genMappings(settings: Record<string, any>) {
-  Object.entries(insertMappings).forEach((mapping) => {
+function addMappings(
+  settings: Record<string, any>,
+  mappings: Record<string, string>,
+  keys: Array<string>,
+  addUpper: boolean = false,
+  prefix: string = ""
+) {
+  Object.entries(mappings).forEach((mapping) => {
     const [before, after] = mapping;
     const pair = { before: [before], after: [after] };
-    const k = "vim.insertModeKeyBindingsNonRecursive";
-    settings[k] = [pair];
-  });
 
-  Object.entries({ ...genericMappings, ...movementMappings }).forEach((mapping) => {
-    const [before, after] = mapping;
-    const pair = { before: [before], after: [after] };
-    movementKeys.forEach((k) => {
+    keys.forEach((k) => {
       settings[k] ||= [];
-      settings[k].push(pair);
-      settings[k].push(toUpper(pair));
+
+      if (prefix !== "") {
+        settings[k].push(withPrefix("<C-w>", pair));
+
+        if (addUpper) {
+          settings[k].push(withPrefix("<C-w>", toUpper(pair)));
+        }
+      } else {
+        settings[k].push(pair);
+
+        if (addUpper) {
+          settings[k].push(toUpper(pair));
+        }
+      }
     });
   });
+}
 
-  Object.entries(movementMappings).forEach((mapping) => {
-    const [before, after] = mapping;
-    const pair = { before: [before], after: [after] };
-    const k = "vim.normalModeKeyBindingsNonRecursive";
-    settings[k] ||= [];
-    settings[k].push(withPrefix("<C-w>", pair));
-    settings[k].push(withPrefix("<C-w>", toUpper(pair)));
-  });
+function genMappings(settings: Record<string, any>) {
+  addMappings(settings, insertMappings, [
+    "vim.insertModeKeyBindingsNonRecursive",
+  ]);
+
+  addMappings(
+    settings,
+    { ...genericMappings, ...movementMappings },
+    movementKeys,
+    true
+  );
+
+  addMappings(
+    settings,
+    movementMappings,
+    ["vim.normalModeKeyBindingsNonRecursive"],
+    true,
+    "<C-w>"
+  );
 }
 
 function main() {
@@ -90,13 +114,18 @@ function main() {
   lline("ARGS");
   console.dir(args);
 
-  const template: Record<string, any> = JSON.parse(Deno.readTextFileSync(args.source || "template.json"))
+  const template: Record<string, any> = JSON.parse(
+    Deno.readTextFileSync(args.source || "template.json")
+  );
   lline("BEFORE");
   console.log(template);
   genMappings(template);
   lline("AFTER");
   console.log(template);
-  Deno.writeTextFileSync(args.output || "settings.json", JSON.stringify(template, null, 2));
+  Deno.writeTextFileSync(
+    args.output || "settings.json",
+    JSON.stringify(template, null, 2)
+  );
 }
 
 main();
