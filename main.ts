@@ -24,7 +24,6 @@ const genericMappings: Mappings = {
   l: "n",
 
   j: "d",
-  jj: "dd",
   ";": ":",
   "-": "$",
 };

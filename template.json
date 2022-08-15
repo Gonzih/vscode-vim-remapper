@@ -1,5 +1,8 @@
 {
-    "workbench.colorTheme": "Monokai Dimmed",
-    "vim.leader": "<space>",
-    "vim.handleKeys": {}
+  "workbench.colorTheme": "Monokai Dimmed",
+  "vim.leader": "<space>",
+  "vim.handleKeys": {},
+  "python.venvFolders": [
+    "~/.cache/pypoetry/virtualenvs"
+  ]
 }
