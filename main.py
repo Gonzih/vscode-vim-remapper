@@ -29,10 +29,13 @@ movement_keys = [
 ]
 
 def with_prefix(prefix: str, pair):
+    if not prefix:
+        return pair
+
     newpair = {}
     for k in pair:
         newpair[k] = [prefix]
-        newpair[k].append(pair[k])
+        newpair[k].extend(pair[k])
 
     return newpair
 
@@ -53,22 +56,21 @@ def gen_map(keymap, cfgkeys, add_upper_case: bool = False, prefix: str = ""):
         for before in keymap:
             after = keymap[before]
             pair = { "before": [before], "after": [after] }
-            if prefix:
-                settings[k].append(with_prefix(prefix, pair))
+            settings[k].append(with_prefix(prefix, pair))
+            if add_upper_case:
                 settings[k].append(with_prefix(prefix, to_upper(pair)))
-            else:
-                settings[k].append(pair)
-                if add_upper_case:
-                    settings[k].append(to_upper(pair))
 
     return settings
 
 def generate():
+    overlap_key = "vim.normalModeKeyBindingsNonRecursive"
     insert = gen_map(insert_map, ["vim.insertModeKeyBindingsNonRecursive"])
     all = gen_map(generic_map | movement_map, movement_keys, True)
-    movement = gen_map(movement_map, ["vim.normalModeKeyBindingsNonRecursive"], True, "<C-w>")
+    movement = gen_map(movement_map, [overlap_key], True, "<C-w>")
 
-    return insert | all | movement
+    all[overlap_key].extend(movement[overlap_key])
+
+    return insert | all
 
 template_json = "template.json"
 settings_json = "settings.json"
@@ -79,8 +81,7 @@ def run():
         template = json.load(f)
 
     settings = template | generate()
-    print(settings)
-    print(json.dumps(settings, indent=2))
+    #print(json.dumps(settings, indent=2))
 
     info(f"Writing {settings_json}")
     with open(settings_json, "w") as f:
