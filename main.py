@@ -26,6 +26,7 @@ movement_keys = [
     "vim.commandLineModeKeyBindingsNonRecursive",
     "vim.normalModeKeyBindingsNonRecursive",
     "vim.visualModeKeyBindingsNonRecursive",
+    "vim.operatorPendingModeKeyBindings",
 ]
 
 
