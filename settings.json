@@ -485,5 +485,135 @@
         "L"
       ]
     }
+  ],
+  "vim.operatorPendingModeKeyBindings": [
+    {
+      "before": [
+        "l"
+      ],
+      "after": [
+        "n"
+      ]
+    },
+    {
+      "before": [
+        "L"
+      ],
+      "after": [
+        "N"
+      ]
+    },
+    {
+      "before": [
+        "j"
+      ],
+      "after": [
+        "d"
+      ]
+    },
+    {
+      "before": [
+        "J"
+      ],
+      "after": [
+        "D"
+      ]
+    },
+    {
+      "before": [
+        ";"
+      ],
+      "after": [
+        ":"
+      ]
+    },
+    {
+      "before": [
+        ";"
+      ],
+      "after": [
+        ":"
+      ]
+    },
+    {
+      "before": [
+        "-"
+      ],
+      "after": [
+        "$"
+      ]
+    },
+    {
+      "before": [
+        "-"
+      ],
+      "after": [
+        "$"
+      ]
+    },
+    {
+      "before": [
+        "d"
+      ],
+      "after": [
+        "h"
+      ]
+    },
+    {
+      "before": [
+        "D"
+      ],
+      "after": [
+        "H"
+      ]
+    },
+    {
+      "before": [
+        "h"
+      ],
+      "after": [
+        "j"
+      ]
+    },
+    {
+      "before": [
+        "H"
+      ],
+      "after": [
+        "J"
+      ]
+    },
+    {
+      "before": [
+        "t"
+      ],
+      "after": [
+        "k"
+      ]
+    },
+    {
+      "before": [
+        "T"
+      ],
+      "after": [
+        "K"
+      ]
+    },
+    {
+      "before": [
+        "n"
+      ],
+      "after": [
+        "l"
+      ]
+    },
+    {
+      "before": [
+        "N"
+      ],
+      "after": [
+        "L"
+      ]
+    }
   ]
 }
